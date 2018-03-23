@@ -1,11 +1,11 @@
-# snd-i2s\_rpi
+**Driver for the Adafruit I2S MEMS Microphone**
 
-Driver for Adafruit's I2S MEMS Microphone
+[Product learn page on Adafruit](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview).
 
-Installing the I2S microphone easy way
+Installing the I2S microphone driver the easy way
 ====================================
 
-If you use Raspbian or any Debian-derived distribution, go to the releases tab, download the newest deb version.
+If you use Raspbian or any Debian-derived distribution, [go to the releases tab](https://github.com/htruong/snd-i2s_rpi/releases) and download the newest deb version.
 
 Then do the following
 
@@ -29,8 +29,8 @@ $ sudo dpkg -i snd-i2s-rpi-dkms_0.0.2_all.deb
 
 $ sudo modprobe snd-i2s_rpi rpi_platform_generation=0
 
-# rpi_platform_generation=0 -> Raspberry Pi 1 B/A/A+, 0
-# do not add anything -> everything else (2/3).
+# rpi_platform_generation=0 for Raspberry Pi 1 B/A/A+, 0
+# do not add anything for everything else (2/3).
 
 # see if it works
 
