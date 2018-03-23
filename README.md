@@ -38,9 +38,16 @@ $ dmesg | grep i2s
 
 # it should say blah.i2s mapping OK
 
+# [    3.519017] snd_i2s_rpi: loading out-of-tree module taints kernel.
+# [    3.519881] snd-i2s_rpi: Version 0.0.2
+# [    3.519889] snd-i2s_rpi: Setting platform to 20203000.i2s
+# [    7.624559] asoc-simple-card asoc-simple-card.0: ASoC: CPU DAI 20203000.i2s not registered - will retry
+#  ... snip ...
+# [    9.507142] asoc-simple-card asoc-simple-card.0: snd-soc-dummy-dai <-> 20203000.i2s mapping ok
+
 $ arecord -l
 
-# it should show your mic
+# it should list your mic
 # note that the default vol level is very low, you need
 # to follow the ladyada's guide to make it hearable
 
@@ -76,7 +83,7 @@ You may also specify custom toolchains by using the `CROSS_COMPILE` flag:
 Installing as a part of the kernel
 ======================================
 
-Instructions to come later. Who would ever wants to do that?
+Instructions to come later. Who would ever want to do that?
 
 
 
