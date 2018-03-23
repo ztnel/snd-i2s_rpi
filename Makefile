@@ -1,4 +1,4 @@
-MOD_NAME	:= snd-i2s_mic
+MOD_NAME	:= snd-i2s_rpi
 
 ifneq ($(KERNELRELEASE),)
 
@@ -6,10 +6,10 @@ ifneq ($(KERNELRELEASE),)
 
 all:
 	@echo "Building from the kernel build system"
-	@echo "Module build: $(CONFIG_SND_I2S_MIC)"
+	@echo "Module build: $(CONFIG_SND_I2S_RPI)"
 	@echo "Name: $(MOD_NAME)"
 
-obj-$(CONFIG_SND_I2S_MIC) := $(MOD_NAME).o
+obj-$(CONFIG_SND_I2S_RPI) := $(MOD_NAME).o
 
 else
 # external module build
@@ -30,7 +30,7 @@ MDIR	?= /lib/modules/$(shell uname -r)
 PWD	:= $(shell pwd)
 PWD	:= $(shell pwd)
 
-export CONFIG_SND_I2S_MIC := m
+export CONFIG_SND_I2S_RPI := m
 
 all:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
@@ -41,7 +41,7 @@ clean:
 help:
 	$(MAKE) -C $(KDIR) M=$(PWD) help
 
-install: snd-2s_mic.ko
+install: snd-2s_rpi.ko
 	rm -f ${MDIR}/kernel/sound/drivers/$(MOD_NAME).ko
 	install -m644 -b -D $(MOD_NAME).ko ${MDIR}/kernel/sound/drivers/$(MOD_NAME).ko
 	depmod -aq

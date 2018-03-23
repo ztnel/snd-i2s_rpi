@@ -1,17 +1,17 @@
 /*
  * =====================================================================================
  *
- *       Filename:  test.c
+ *       Filename:  snd-i2s_rpi
  *
  *    Description:  
  *
- *        Version:  1.0
- *        Created:  06/02/16 16:46:13
+ *        Version:  0.0.2
+ *        Created:  2018-03-23
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  YOUR NAME (), 
- *   Organization:  
+ *         Author:  Paul Creaser (), Huan Truong (htruong@tnhh.net)
+ *   Organization:  Crankshaft
  *
  * =====================================================================================
  */
@@ -21,6 +21,8 @@
 #include <linux/platform_device.h>
 #include <sound/simple_card.h>
 #include <linux/delay.h>
+#include "snd-i2s_rpi.h"
+
 /*
  * modified for linux 4.1.5
  * inspired by https://github.com/msperl/spi-config
@@ -37,7 +39,7 @@
 
 void device_release_callback(struct device *dev) { /*  do nothing */ };
 static struct asoc_simple_card_info snd_rpi_simple_card_info = {
-.card = "snd_rpi_simple_card", // -> snd_soc_card.name
+.card = "snd_rpi_i2s_card", // -> snd_soc_card.name
 .name = "simple-card_codec_link", // -> snd_soc_dai_link.name
 .codec = "snd-soc-dummy", // "dmic-codec", // -> snd_soc_dai_link.codec_name
 .platform = "3f203000.i2s",
@@ -59,28 +61,33 @@ static struct platform_device snd_rpi_simple_card_device = {
 };
 
 
-int hello_init(void)
+int i2s_rpi_init(void)
 {
-const char *dmaengine = "bcm2708-dmaengine"; //module name
-int ret;
+	const char *dmaengine = "bcm2708-dmaengine"; //module name
+	int ret;
 
-ret = request_module(dmaengine);
-pr_alert("request module load '%s': %d\n",dmaengine, ret);
-ret = platform_device_register(&snd_rpi_simple_card_device);
-pr_alert("register platform device '%s': %d\n",snd_rpi_simple_card_device.name, ret);
+	printk(KERN_INFO "snd-i2s_rpi: Version %s\n", SND_I2S_RPI_VERSION);
 
-pr_alert("Hello World :)\n");
-return 0;
+	ret = request_module(dmaengine);
+	//pr_alert("request module load '%s': %d\n",dmaengine, ret);
+
+	ret = platform_device_register(&snd_rpi_simple_card_device);
+	//pr_alert("register platform device '%s': %d\n",snd_rpi_simple_card_device.name, ret);
+
+	return 0;
 }
 
-void hello_exit(void)
-{// you'll have to sudo modprobe -r the card & codec drivers manually (first?)
-platform_device_unregister(&snd_rpi_simple_card_device);
-pr_alert("Goodbye World!\n");
+void i2s_rpi_exit(void)
+{
+	// you'll have to sudo modprobe -r the card & codec drivers manually (first?)
+	platform_device_unregister(&snd_rpi_simple_card_device);
+	//pr_alert("i2s mic module unloaded\n");
 }
-module_init(hello_init);
-module_exit(hello_exit);
-MODULE_DESCRIPTION("ASoC simple-card I2S setup");
-MODULE_AUTHOR("Plugh Plover");
+
+
+module_init(i2s_rpi_init);
+module_exit(i2s_rpi_exit);
+MODULE_DESCRIPTION("ASoC simple-card I2S Microphone");
+MODULE_AUTHOR("Paul Creaser");
 MODULE_LICENSE("GPL v2");
 
