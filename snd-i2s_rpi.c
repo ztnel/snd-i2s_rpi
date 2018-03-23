@@ -71,7 +71,7 @@ static struct platform_device snd_rpi_simple_card_device = {
 int i2s_rpi_init(void)
 {
 	const char *dmaengine = "bcm2708-dmaengine"; //module name
-	struct platform_device snd_card;
+	struct platform_device *snd_card;
 	int ret;
 
 	printk(KERN_INFO "snd-i2s_rpi: Version %s\n", SND_I2S_RPI_VERSION);
@@ -79,19 +79,20 @@ int i2s_rpi_init(void)
 	ret = request_module(dmaengine);
 	// pr_alert("request module load '%s': %d\n",dmaengine, ret);
 
-	snd_card = snd_rpi_simple_card_device;
+	snd_card = &snd_rpi_simple_card_device;
 
 	if (rpi_platform_generation == 0) {
 		struct asoc_simple_card_info card_info_alt;
 
+		printk(KERN_INFO "snd-i2s_rpi: Setting platform to 20203000\n", SND_I2S_RPI_VERSION);
 		card_info_alt = snd_rpi_simple_card_info;
 		card_info_alt.platform = "20203000.i2s";
 		card_info_alt.cpu_dai.name = "20203000.i2s";
 
-		snd_card.dev.platform_data = &card_info_alt;
+		snd_card->dev.platform_data = &card_info_alt;
 	}
 
-	ret = platform_device_register(&snd_card);
+	ret = platform_device_register(snd_card);
 
 
 
