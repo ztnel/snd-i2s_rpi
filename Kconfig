@@ -1,0 +1,10 @@
+config SND_I2S_RPI
+	tristate "I2S MEMs microphone"
+	select NLS
+	help
+	  This adds support for the Adafruits I2S soundcard.
+
+config SND_I2S_RPI_DEBUG_MSG
+	bool "print debug messages"
+	depends on SND_I2S_RPI
+	default n
