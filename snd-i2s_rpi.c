@@ -11,7 +11,7 @@
  *       Compiler:  gcc
  *
  *         Author:  Paul Creaser (), Huan Truong (htruong@tnhh.net)
- *   Organization:  Crankshaft
+ *   Organization:  Crankshaft (http://getcrankshaft.com)
  *
  * =====================================================================================
  */
@@ -42,59 +42,65 @@ void device_release_callback(struct device *dev) { /*  do nothing */ };
 
 static short rpi_platform_generation = 1;
 module_param(rpi_platform_generation, short, 0);
-MODULE_PARM_DESC(rpi_platform_generation, "Raspberry Pi generation: 0=BCM2835, 1=Others");
+MODULE_PARM_DESC(rpi_platform_generation, "Raspberry Pi generation: 0=Zero, 1=Others");
 
-static struct asoc_simple_card_info snd_rpi_simple_card_info = {
+static struct asoc_simple_card_info default_snd_rpi_simple_card_info = {
 	.card = "snd_rpi_i2s_card", // -> snd_soc_card.name
 	.name = "simple-card_codec_link", // -> snd_soc_dai_link.name
 	.codec = "snd-soc-dummy", // "dmic-codec", // -> snd_soc_dai_link.codec_name
-	.platform = "3f203000.i2s",
+	.platform = "not-set.i2s",
 	.daifmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS,
 	.cpu_dai = {
-		.name = "3f203000.i2s", // -> snd_soc_dai_link.cpu_dai_name
-		.sysclk = 0 },
+		.name = "not-set.i2s", // -> snd_soc_dai_link.cpu_dai_name
+		.sysclk = 0 
+	},
 	.codec_dai = {
-	.name = "snd-soc-dummy-dai", //"dmic-codec", // -> snd_soc_dai_link.codec_dai_name
-	.sysclk = 0 },
+		.name = "snd-soc-dummy-dai", //"dmic-codec", // -> snd_soc_dai_link.codec_dai_name
+		.sysclk = 0 
+	},
 };
 
-static struct platform_device snd_rpi_simple_card_device = {
+static struct platform_device default_snd_rpi_simple_card_device = {
 	.name = "asoc-simple-card", //module alias
 	.id = 0,
 	.num_resources = 0,
 	.dev = {
 		.release = &device_release_callback,
-		.platform_data = &snd_rpi_simple_card_info, // *HACK ALERT*
+		.platform_data = &default_snd_rpi_simple_card_info, // *HACK ALERT*
 	},
 };
+
+static char *pri_platform = "3f203000.i2s";
+static char *alt_platform = "20203000.i2s";
+
+static struct asoc_simple_card_info card_info;
+static struct platform_device card_device;
 
 int i2s_rpi_init(void)
 {
 	const char *dmaengine = "bcm2708-dmaengine"; //module name
-	struct platform_device *snd_card;
+	static char *card_platform;
 	int ret;
 
 	printk(KERN_INFO "snd-i2s_rpi: Version %s\n", SND_I2S_RPI_VERSION);
 
+	card_platform = pri_platform;
+	if (rpi_platform_generation == 0) {
+		printk(KERN_INFO "snd-i2s_rpi: Setting platform to %s\n", alt_platform);
+		card_platform = alt_platform;
+	}
+
 	ret = request_module(dmaengine);
 	// pr_alert("request module load '%s': %d\n",dmaengine, ret);
 
-	snd_card = &snd_rpi_simple_card_device;
+	card_info = default_snd_rpi_simple_card_info;
+	card_info.platform = card_platform;
+	card_info.cpu_dai.name = card_platform;
 
-	if (rpi_platform_generation == 0) {
-		struct asoc_simple_card_info card_info_alt;
+	card_device = default_snd_rpi_simple_card_device;
+	card_device.dev.platform_data = &card_info;
 
-		printk(KERN_INFO "snd-i2s_rpi: Setting platform to 20203000\n", SND_I2S_RPI_VERSION);
-		card_info_alt = snd_rpi_simple_card_info;
-		card_info_alt.platform = "20203000.i2s";
-		card_info_alt.cpu_dai.name = "20203000.i2s";
-
-		snd_card->dev.platform_data = &card_info_alt;
-	}
-
-	ret = platform_device_register(snd_card);
-
-
+	ret = platform_device_register(&card_device);
 
 	//pr_alert("register platform device '%s': %d\n",snd_rpi_simple_card_device.name, ret);
 
@@ -104,7 +110,7 @@ int i2s_rpi_init(void)
 void i2s_rpi_exit(void)
 {
 	// you'll have to sudo modprobe -r the card & codec drivers manually (first?)
-	platform_device_unregister(&snd_rpi_simple_card_device);
+	platform_device_unregister(&card_device);
 	//pr_alert("i2s mic module unloaded\n");
 }
 
