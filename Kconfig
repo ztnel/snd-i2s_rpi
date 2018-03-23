@@ -1,0 +1,10 @@
+config SND_I2S_MIC
+	tristate "Adafruit I2S MEMs microphone"
+	select NLS
+	help
+	  This adds support for the Adafruits I2S MEMs microphone.
+
+config SND_I2S_MIC_DEBUG_MSG
+	bool "print debug messages"
+	depends on SND_I2S_MIC
+	default n
