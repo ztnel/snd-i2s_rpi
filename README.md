@@ -2,6 +2,8 @@
 
 [Product learn page on Adafruit](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview).
 
+Known problems with this driver: Low vol level. While you can use the alsa magic socery to make an alsa softvol input, that approach won't work out of the box with anything that uses Pulseaudio. If you have any idea how to make this work with Pulse, please drop me a line.
+
 Installing the I2S microphone driver the easy way
 ====================================
 
