@@ -61,7 +61,7 @@ static struct asoc_simple_card_info default_snd_rpi_simple_card_info = {
 };
 
 static struct platform_device default_snd_rpi_simple_card_device = {
-	.name = "asoc-simple-card", //module alias
+	.name = "snd_rpi_i2s_card", //module alias
 	.id = 0,
 	.num_resources = 0,
 	.dev = {
@@ -119,6 +119,6 @@ void i2s_rpi_exit(void)
 module_init(i2s_rpi_init);
 module_exit(i2s_rpi_exit);
 MODULE_DESCRIPTION("ASoC simple-card I2S Microphone");
-MODULE_AUTHOR("Huan Truong");
-MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Huan Truong <htruong@tnhh.net>");
+MODULE_LICENSE("GPL v2");
 
