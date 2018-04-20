@@ -1,4 +1,4 @@
-I2SRPI_FOLDER ?= updates/snd-i2c_rpi
+I2SRPI_FOLDER ?= kernel/sound/drivers/snd-i2c_rpi
 
 I2SRPI_MODULE:
 	make clean -C $(I2SRPI_FOLDER) KDIR=$(KERNEL_OUT)
